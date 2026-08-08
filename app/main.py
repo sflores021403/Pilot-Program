@@ -48,3 +48,16 @@ def add_equipment(equipment: Equipment):
     equipment_list.append(new_equipment)
 
     return new_equipment
+
+@app.put("/equipment/{equipment_id}")
+def update_equipment(equipment_id: int, equipment: Equipment):
+    for item in equipment_list:
+        if item["id"] == equipment_id:
+            item["serial_number"] = equipment.serial_number
+            item["type"] = equipment.type
+            item["status"] = equipment.status
+            item["hub"] = equipment.hub
+
+            return item
+
+    return {"error": "Equipment not found"}
