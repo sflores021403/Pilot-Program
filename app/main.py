@@ -1,8 +1,15 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
-equipment = [
+class Equipment(BaseModel):
+    serial_number: str
+    type: str
+    status: str
+    hub: str
+
+equipment_list = [
     {
         "id": 1,
         "serial_number": "220H00192",
@@ -26,4 +33,18 @@ def home():
 
 @app.get("/equipment")
 def get_equipment():
-    return equipment
+    return equipment_list
+
+@app.post("/equipment")
+def add_equipment(equipment: Equipment):
+    new_equipment = {
+        "id": len(equipment_list) + 1,
+        "serial_number": equipment.serial_number,
+        "type": equipment.type,
+        "status": equipment.status,
+        "hub": equipment.hub
+    }
+
+    equipment_list.append(new_equipment)
+
+    return new_equipment
