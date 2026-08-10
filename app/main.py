@@ -61,3 +61,12 @@ def update_equipment(equipment_id: int, equipment: Equipment):
             return item
 
     return {"error": "Equipment not found"}
+
+@app.delete("/equipment/{equipment_id}")
+def delete_equipment(equipment_id: int):
+    for item in equipment_list:
+        if item["id"] == equipment_id:
+            equipment_list.remove(item)
+            return {"message": "Equipment deleted"}
+
+    return {"error": "Equipment not found"}
