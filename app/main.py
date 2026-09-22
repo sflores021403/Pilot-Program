@@ -1,7 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from .database import engine, SessionLocal
+from . import models
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
+def get_db():
+    db = SessionLocal()
+
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 class Equipment(BaseModel):
     serial_number: str
@@ -32,8 +48,21 @@ def home():
     return {"message": "Pilot Program system online."}
 
 @app.get("/equipment")
-def get_equipment():
-    return equipment_list
+def get_equipment(db: Session = Depends(get_db)):
+    equipment = db.query(models.Equipment).all()
+    return equipment
+
+
+@app.get("/equipment")
+def get_equipment(equipment_type: str | None = None, db: Session = Depends(get_db)):
+    query = db.query(models.Equipment)
+
+    if equipment_type is not None:
+        query = query.filter(
+            models.Equipment.equipment_type == equipment_type
+        )
+
+    return query.all()
 
 @app.post("/equipment")
 def add_equipment(equipment: Equipment):
