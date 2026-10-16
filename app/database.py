@@ -1,7 +1,17 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+import os
+from sqlalchemy.engine import URL
 
-DATABASE_URL = "postgresql://postgres:Ste23301@localhost/equipment_db"
+
+
+DATABASE_URL = URL.create(
+    "postgresql+psycopg",
+    username="postgres",
+    password=os.environ["PILOT_DB_PASSWORD"],
+    host="localhost",
+    database="pilot_program",
+)
 
 engine = create_engine(DATABASE_URL)
 
